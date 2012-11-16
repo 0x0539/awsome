@@ -29,9 +29,13 @@ module Awsome
         Awsome.wait_until(interval: 10) { has_ssh? }
       end
 
+      def ssh(*args)
+        Awsome::Ssh.ssh(@properties['public_dns_name'], *args)
+      end
+
       def reattach_volumes(*volumes)
         volumes.each do |info| 
-          Awsome::Ec2.detach_volume(info['id'])
+          Awsome::Ec2.detach_volume(info['id'], info['device'], info['preumount'])
           Awsome.wait_until(interval: 10) { Awsome::Ec2.volume_available?(info['id']) }
           Awsome::Ec2.attach_volume(info['id'], @properties['instance_id'], info['device']) 
         end
