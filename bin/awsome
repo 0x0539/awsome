@@ -1,0 +1,28 @@
+#!/usr/bin/env ruby
+
+require 'awsome'
+require 'optparse'
+
+requirements_file = 'requirements.yml'
+OptionParser.new do |opts|
+  opts.banner = 'Usage: awsome [options]' 
+  opts.on('-r', '--requirements [FILE]', 'Use a requirements file from another location (default is ./requirements.yml)') do |opt|
+    requirements_file = opt
+  end
+  opts.on('-v', '--verbose', 'Print commands as they are executed') do |opt|
+    Awsome.config.verbose = true
+  end
+  opts.on('-d', '--debug', 'Run ec2 commands with --debug') do |opt|
+    Awsome.config.debug = true
+  end
+  opts.on('-s', '--stacks', 'Print out full stack traces when commands are executed') do |opt|
+    Awsome.config.stacks = true
+  end
+end.parse!
+
+instances = Awsome::Ec2.describe_instances('instance-state-name' => 'running')
+requirements = Awsome::Requirements.from_yaml_file(requirements_file)
+matchmaker = Awsome::Matchmaker.new(instances, requirements)
+executor = Awsome::Executor.new(matchmaker.matches)
+
+executor.execute
