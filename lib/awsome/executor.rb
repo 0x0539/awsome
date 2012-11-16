@@ -14,12 +14,6 @@ module Awsome
         @i_pool = match[:i_pool]
         @r_pool = match[:r_pool]
 
-        puts "instance pool:"
-        ap @i_pool
-
-        puts "requirement pool:"
-        ap @r_pool
-
         run
         wait_for_ssh
         reattach_volumes
