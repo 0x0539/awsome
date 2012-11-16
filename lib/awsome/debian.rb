@@ -30,7 +30,7 @@ module Awsome
       Awsome::Ssh.ssh hostname, "sudo apt-get update"
 
       if packages.empty?
-        Awsome::Ssh.ssh hostname, "sudo apt-get upgrade"
+        Awsome::Ssh.ssh hostname, "sudo apt-get upgrade -y --force-yes"
       else
         packages.each do |package| 
           Awsome::Ssh.ssh hostname, "sudo apt-get install -y --force-yes #{package}"
