@@ -52,13 +52,13 @@ module Awsome
     end
 
     def self.deregister_instance_from_lb(load_balancer_name, instance_id)
-      cmd = Awsome::Elb.command('elb-deregister-instances-from-lb', load_balancer_name, instances: instance_id, delimiter: @@delimiter)
-      Awsome.execute(cmd)
+      cmd = Awsome::Elb.command('elb-deregister-instances-from-lb', load_balancer_name, instances: instance_id)
+      Awsome.execute(cmd, delimiter: @@delimiter)
     end
 
     def self.register_instance_with_lb(load_balancer_name, instance_id)
-      cmd = Awsome::Elb.command('elb-register-instances-with-lb', load_balancer_name, instances: instance_id, delimiter: @@delimiter)
-      Awsome.execute(cmd)
+      cmd = Awsome::Elb.command('elb-register-instances-with-lb', load_balancer_name, instances: instance_id)
+      Awsome.execute(cmd, delimiter: @@delimiter)
     end
   end
 end
