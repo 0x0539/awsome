@@ -111,13 +111,13 @@ module Awsome
       Awsome.execute(cmd, columns: @@describe_attachments_fields, filter: /^ATTACHMENT/)
     end
 
-    def self.detach_volume(volume_id, device, preumount)
+    def self.detach_volume(volume_id, dir, preumount)
       attachments = describe_attachments('volume-id' => volume_id)
       if attachments.any?
         instance_id = attachments.first['instance_id']
         instance = describe_instances('instance-id' => instance_id).first
         instance.ssh preumount if preumount
-        instance.ssh "sudo umount #{device}"
+        instance.ssh "sudo umount #{dir}"
 
         cmd = Awsome::Ec2.command('ec2-detach-volume', volume_id)
         Awsome.execute(cmd)

@@ -35,7 +35,7 @@ module Awsome
 
       def reattach_volumes(*volumes)
         volumes.each do |info| 
-          Awsome::Ec2.detach_volume(info['id'], info['device'], info['preumount'])
+          Awsome::Ec2.detach_volume(info['id'], info['dir'], info['preumount'])
           Awsome.wait_until(interval: 10) { Awsome::Ec2.volume_available?(info['id']) }
           Awsome::Ec2.attach_volume(info['id'], @properties['instance_id'], info['device']) 
         end
