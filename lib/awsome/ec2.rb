@@ -78,13 +78,11 @@ module Awsome
       volume_identifier
       volume_id
       size_gb
-      type
       iops
-      snapshot
       availability_zone
       state
       timestamp
-      tags
+      type
     )
 
     def self.describe_volumes(*volume_ids)
