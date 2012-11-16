@@ -87,10 +87,8 @@ module Awsome
       tags
     )
 
-    def self.describe_volumes(filters={}, *volume_ids)
-      cmd = [Awsome::Ec2.command('ec2-describe-volumes')]
-      cmd += volume_ids
-      cmd += filters.collect { |k,v| "--filter \"#{k}=#{v}\"" }
+    def self.describe_volumes(*volume_ids)
+      cmd = [Awsome::Ec2.command('ec2-describe-volumes')] + volume_ids
       Awsome.execute(cmd, columns: @@describe_volumes_fields, filter: /^VOLUME/)
     end
 
