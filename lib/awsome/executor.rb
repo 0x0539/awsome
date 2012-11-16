@@ -21,6 +21,18 @@ module Awsome
         terminate
       end
 
+      def instances_to_use(&block)
+        @i_pool.each_with_index do |instance, index|
+          yield(instance, @r_pool[index]) if index < @r_pool.length
+        end
+      end
+
+      def instances_to_terminate(&block)
+        @i_pool.each_with_index do |instance, index|
+          yield(instance) if index >= @r_pool.length
+        end
+      end
+
       def run
         @i_pool.each_with_index do |instance, i|
           @i_pool[i] = Awsome::Ec2.run_instance(@r_pool[i].properties) if instance.nil?
@@ -28,30 +40,29 @@ module Awsome
       end
 
       def wait_for_ssh
-        @i_pool.each do |i|
-          i.wait_until_running!
-          i.wait_for_ssh!
+        instances_to_use do |instance, requirement|
+          instance.wait_until_running!
+          instance.wait_for_ssh!
         end
       end
 
       def reattach_volumes
-        @i_pool.each_with_index do |instance, i|
-          instance.reattach_volumes(*@r_pool[i].volumes_to_attach(instance))
+        instances_to_use do |instance, requirement|
+          instance.reattach_volumes(*requirement.volumes_to_attach(instance))
         end
       end
 
       def deploy
-        @i_pool.each_with_index do |instance, i|
+        instances_to_use do |instance, requirement|
           instance.deregister_from_elbs
-          instance.remove_packages(*@r_pool[i].packages_to_remove(instance))
-          instance.install_packages(*@r_pool[i].packages_to_install(instance))
-          instance.register_with_elbs(*@r_pool[i].elbs)
+          instance.remove_packages(*requirement.packages_to_remove(instance))
+          instance.install_packages(*requirement.packages_to_install(instance))
+          instance.register_with_elbs(*requirement.elbs)
         end
       end
 
       def terminate
-        @i_pool.each_with_index do |instance, i|
-          next if i < @r_pool.length
+        instances_to_terminate do |instance|
           instance.deregister_from_elbs
           instance.terminate
         end
