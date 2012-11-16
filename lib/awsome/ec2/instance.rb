@@ -13,7 +13,7 @@ module Awsome
       end
 
       def volumes
-        Awsome::Ec2.describe_volumes('attachment.instance-id' => @properties['instance_id']).collect do |p| 
+        Awsome::Ec2.describe_attachments('attachment.instance-id' => @properties['instance_id']).collect do |p| 
           p['volume_id'] 
         end.to_set
       end
@@ -32,6 +32,7 @@ module Awsome
       def reattach_volumes(*volumes)
         volumes.each do |info| 
           Awsome::Ec2.detach_volume(info['id'])
+          Awsome.wait_until(interval: 10) { Awsome::Ec2.volume_available?(info['id']) }
           Awsome::Ec2.attach_volume(info['id'], @properties['instance_id'], info['device']) 
         end
       end

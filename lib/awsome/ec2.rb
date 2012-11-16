@@ -75,6 +75,32 @@ module Awsome
     end
 
     @@describe_volumes_fields = %w(
+      volume_identifier
+      volume_id
+      size_gb
+      type
+      iops
+      snapshot
+      availability_zone
+      state
+      timestamp
+      tags
+    )
+
+    def self.describe_volumes(filters={}, *volume_ids)
+      cmd = [Awsome::Ec2.command('ec2-describe-volumes')]
+      cmd += volume_ids
+      cmd += filters.collect { |k,v| "--filter \"#{k}=#{v}\"" }
+      Awsome.execute(cmd, columns: @@describe_volumes_fields, filter: /^VOLUME/)
+    end
+
+    def self.volume_available?(volume_id)
+      volumes = describe_volumes(volume_id)
+      raise "volume #{volume_id} not found" if volumes.empty?
+      volumes.first['state'] == 'available'
+    end
+
+    @@describe_attachments_fields = %w(
       attachment_identifier
       volume_id
       instance_id
@@ -83,7 +109,7 @@ module Awsome
       date
     )
 
-    def self.describe_volumes(filters={})
+    def self.describe_attachments(filters={})
       cmd = [Awsome::Ec2.command('ec2-describe-volumes')]
       cmd += filters.collect { |k,v| "--filter \"#{k}=#{v}\"" }
       Awsome.execute(cmd, columns: @@describe_volumes_fields, filter: /^ATTACHMENT/)
