@@ -15,7 +15,11 @@ module Awsome
       return if packages.empty?
 
       Awsome::Ssh.ssh hostname, "sudo apt-get update"
-      Awsome::Ssh.ssh hostname, "sudo apt-get remove -y --force-yes #{packages.join(' ')}"
+
+      packages.each do |package| 
+        Awsome::Ssh.ssh hostname, "sudo apt-get remove -y --force-yes #{package}"
+      end
+
       Awsome::Ssh.ssh hostname, "echo #{remaining.to_a.join(',')} > ~/packages.csv"
     end
 
@@ -28,7 +32,9 @@ module Awsome
       if packages.empty?
         Awsome::Ssh.ssh hostname, "sudo apt-get upgrade"
       else
-        Awsome::Ssh.ssh hostname, "sudo apt-get install -y --force-yes #{packages.join(' ')}"
+        packages.each do |package| 
+          Awsome::Ssh.ssh hostname, "sudo apt-get install -y --force-yes #{package}"
+        end
         Awsome::Ssh.ssh hostname, "echo #{remaining.to_a.join(',')} > ~/packages.csv"
       end
     end
