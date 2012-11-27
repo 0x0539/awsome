@@ -39,6 +39,22 @@ module Awsome
         end
       end
 
+      def install_hosts_entries(ip_address, *hostnames)
+        sed = []
+        cmd = []
+
+        # we will remove all hosts entries for the given "ip_address"
+        sed << "sed '/^#{ip_address}/d"
+
+        # we will remove all hosts entries for each of the given "hostnames"
+        sed += hostnames.collect { |h| "sed '/ #{h} /d'" }
+
+        cmd << "sudo cat /etc/hosts | #{sed.join(' | ')} > /etc/hosts.temp"
+        cmd << "sudo echo '#{ip_address} #{hostnames.join(' ')} # GENERATED' >> /etc/hosts.temp"
+        cmd << "sudo mv /etc/hosts.temp /etc/hosts"
+        ssh(cmd)
+      end
+
       def reattach_volumes(*volumes)
         volumes.each do |info| 
           Awsome::Ec2.detach_volume(info['id'], info['dir'], info['preumount'])
