@@ -44,7 +44,7 @@ module Awsome
         cmd = []
 
         # we will remove all hosts entries for the given "ip_address"
-        sed << "sed '/^#{ip_address}/d"
+        sed << "sed '/^#{ip_address}/d'"
 
         # we will remove all hosts entries for each of the given "hostnames"
         sed += hostnames.collect { |h| "sed '/ #{h} /d'" }
