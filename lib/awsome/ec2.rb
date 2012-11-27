@@ -124,6 +124,17 @@ module Awsome
       end
     end
 
+    @@associate_address_columns = %w(
+      identifier 
+      elastic_ip
+      instance_id
+    )
+
+    def self.associate_address(instance_id, ip_address)
+      cmd = Awsome::Ec2.command('ec2-associate-address', ip_address, instance: instance_id)
+      Awsome.execute(cmd, columns: @@associate_address_columns, filter: /^ADDRESS/)
+    end
+
     def self.attach_volume(volume_id, instance_id, device)
       cmd = Awsome::Ec2.command('ec2-attach-volume', volume_id, instance: instance_id, device: device)
       Awsome.execute(cmd)

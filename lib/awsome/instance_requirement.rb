@@ -12,6 +12,10 @@ module Awsome
       @properties['elbs']
     end
 
+    def elastic_ips
+      @properties['elastic_ips']
+    end
+
     def volumes_to_attach(instance)
       (volumes - volumes_attached_to(instance)).collect { |v| @options.find_volume(v) }
     end

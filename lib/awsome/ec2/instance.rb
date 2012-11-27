@@ -33,6 +33,12 @@ module Awsome
         Awsome::Ssh.ssh(@properties['public_dns_name'], *args)
       end
 
+      def associate_ips(*elastic_ips)
+        elastic_ips.each do |ip|
+          Awsome::Ec2.associate_address(@properties['instance_id'], ip)
+        end
+      end
+
       def reattach_volumes(*volumes)
         volumes.each do |info| 
           Awsome::Ec2.detach_volume(info['id'], info['dir'], info['preumount'])
