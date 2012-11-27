@@ -49,8 +49,8 @@ module Awsome
         # we will remove all hosts entries for each of the given "hostnames"
         sed += hostnames.collect { |h| "sed '/ #{h} /d'" }
 
-        cmd << "sudo cat /etc/hosts | #{sed.join(' | ')} > /etc/hosts.temp"
-        cmd << "sudo echo '#{ip_address} #{hostnames.join(' ')} # GENERATED' >> /etc/hosts.temp"
+        cmd << "cat /etc/hosts | #{sed.join(' | ')} | sudo tee /etc/hosts.temp"
+        cmd << "echo '#{ip_address} #{hostnames.join(' ')} # GENERATED' | sudo tee -a /etc/hosts.temp"
         cmd << "sudo mv /etc/hosts.temp /etc/hosts"
         ssh(cmd)
       end
