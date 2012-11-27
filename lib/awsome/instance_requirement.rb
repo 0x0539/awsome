@@ -9,11 +9,11 @@ module Awsome
     end
 
     def elbs
-      @properties['elbs']
+      @properties['elbs'] || []
     end
 
     def elastic_ips
-      @properties['elastic_ips']
+      @properties['elastic_ips'] || []
     end
 
     def volumes_to_attach(instance)
