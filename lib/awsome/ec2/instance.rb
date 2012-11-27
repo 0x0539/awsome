@@ -50,7 +50,7 @@ module Awsome
         sed += hostnames.collect { |h| "sed '/ #{h} /d'" }
 
         cmd << "cat /etc/hosts | #{sed.join(' | ')} | sudo tee /etc/hosts.temp"
-        cmd << "echo '#{ip_address} #{hostnames.join(' ')} # GENERATED' | sudo tee -a /etc/hosts.temp"
+        cmd << "echo '#{ip_address} #{hostnames.join(' ')} # GENERATED' | sudo tee -a /etc/hosts.temp" unless hostnames.empty?
         cmd << "sudo mv /etc/hosts.temp /etc/hosts"
         ssh(cmd)
       end
