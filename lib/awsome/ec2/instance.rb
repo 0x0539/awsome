@@ -34,7 +34,12 @@ module Awsome
       end
 
       def associate_cnames(*cnames)
-        cnames.each { |cname| associate_cname(cname) }
+        cnames.each do |cname| 
+          zone = cname['zone']
+          cname['names'].each do |name| 
+            Awsome::R53.redefine_cname(zone, name, @properties['private_dns_name'])
+          end
+        end
       end
 
       def associate_ips(*elastic_ips)
@@ -76,10 +81,6 @@ module Awsome
           instance = Awsome::Ec2.describe_instances('instance-id' => @properties['instance_id']).first
           raise "instance #{@properties['instance_id']} not found" if instance.nil?
           @properties = instance.properties.clone
-        end
-
-        def associate_cname(cname)
-          Awsome::R53.redefine_cname(cname[:zone], cname[:name], @properties['private_dns_name'])
         end
 
         def has_ssh?
