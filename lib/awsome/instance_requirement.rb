@@ -16,8 +16,8 @@ module Awsome
       @properties['elastic_ips'] || []
     end
 
-    def hostnames
-      @properties['hostnames'] || []
+    def cnames
+      @properties['cnames'] || []
     end
 
     def volumes_to_attach(instance)

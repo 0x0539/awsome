@@ -33,26 +33,14 @@ module Awsome
         Awsome::Ssh.ssh(@properties['public_dns_name'], *args)
       end
 
+      def associate_cnames(*cnames)
+        cnames.each { |cname| associate_cname(cname) }
+      end
+
       def associate_ips(*elastic_ips)
         elastic_ips.each do |ip|
           Awsome::Ec2.associate_address(@properties['instance_id'], ip)
         end
-      end
-
-      def install_hosts_entries(ip_address, *hostnames)
-        sed = []
-        cmd = []
-
-        # we will remove all hosts entries for the given "ip_address"
-        sed << "sed '/^#{ip_address}/d'"
-
-        # we will remove all hosts entries for each of the given "hostnames"
-        sed += hostnames.collect { |h| "sed '/ #{h} /d'" }
-
-        cmd << "cat /etc/hosts | #{sed.join(' | ')} | sudo tee /etc/hosts.temp"
-        cmd << "echo '#{ip_address} #{hostnames.join(' ')} # GENERATED' | sudo tee -a /etc/hosts.temp" unless hostnames.empty?
-        cmd << "sudo mv /etc/hosts.temp /etc/hosts"
-        ssh(cmd)
       end
 
       def reattach_volumes(*volumes)
@@ -88,6 +76,10 @@ module Awsome
           instance = Awsome::Ec2.describe_instances('instance-id' => @properties['instance_id']).first
           raise "instance #{@properties['instance_id']} not found" if instance.nil?
           @properties = instance.properties.clone
+        end
+
+        def associate_cname(cname)
+          Awsome::R53.redefine_cname(cname[:zone], cname[:name], @properties['private_dns_name'])
         end
 
         def has_ssh?

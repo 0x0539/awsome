@@ -57,11 +57,7 @@ module Awsome
           instance.deregister_from_elbs
           instance.remove_packages(*requirement.packages_to_remove(instance))
           instance.install_packages(*requirement.packages_to_install(instance))
-
-          instances_to_use do |other_instance, other_requirement|
-            other_instance.install_hosts_entries(instance.properties['private_dns_name'], *requirement.hostnames)
-          end
-
+          instance.associate_cnames(*requirement.cnames)
           instance.associate_ips(*requirement.elastic_ips)
           instance.register_with_elbs(*requirement.elbs)
         end
