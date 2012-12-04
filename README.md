@@ -3,7 +3,7 @@ awsome
 
 is an EC2 environment manager tool. It is designed to completely automate scaling, reconfigurations, and software deployments in your EC2 environment. Just change your YAML requirements file and let awsome do all the planning and heavy lifting.
 
-One drawback is that, in order to leverage software deployment features, all software must be packaged in Debian archives and all instances must run Debian operating systems. For help with packaging your software in Debian archives, see ```https://github.com/0x0539/debstep.git```
+One drawback is that in order to leverage software deployment features, all software must be packaged in Debian archives and all instances must run Debian operating systems. For help with packaging your software in Debian archives, see ```https://github.com/0x0539/debstep.git```
 
 Prerequisites
 =============
