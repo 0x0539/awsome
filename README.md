@@ -1,20 +1,18 @@
 awsome
 ======
 
-is an EC2 environment manager tool. It is designed to completely automate scaling, reconfigurations, and software deployments in your EC2 environment. Just change your YAML requirements file and let awsome do all the planning and heavy lifting.
+An EC2 environment manager tool designed to automate scaling, reconfigurations, and software deployments in your EC2 environment. Just change your YAML requirements file and let awsome do all the planning and heavy lifting.
 
-One drawback is that in order to leverage software deployment features, all software must be packaged in Debian archives and all instances must run Debian operating systems. For help with packaging your software in Debian archives, see ```https://github.com/0x0539/debstep.git```
+One drawback is that in order to leverage software deployment features, all software must be packaged in Debian archives and all instances must run Debian operating systems. For help with packaging your software in Debian archives, see ```https://github.com/0x0539/debstep.git```. I use reprepro to maintain my personal Debian repositories.
 
 Prerequisites
 =============
 
-Install the gem:
+Install the gem.  It comes with a binary, so you may need to sudo.
 
 ```
 gem install awsome
 ```
-
-It comes with a binary, so you may need to sudo.
 
 Next, download the EC2 api tools and the ELB api tools.
 
@@ -28,26 +26,26 @@ options:
   except_instance_ids:           # instances to be ignored by the planner
   - i-11111111
   - i-22222222
-  volumes:                       # register any volumes you plan to attach/detach here
+  volumes:                       # any volumes you plan to attach/detach go here
   - id: vol-11111111
     device: /dev/sdf             # desired device name
     dir: /var/lib/mongodb        # mount point
     preumount: sudo stop mongodb # command to execute before unmounting/detaching
 instances:
-- packages:                      # names of debian packages to deploy (latest version)
+- packages:                      # debian packages to deploy (latest version)
     - debian-package-1           
     - debian-package-2
   availability_zone: us-southwest-4a
   ami_id: ami-11111111
   instance_type: m1.small
   security_group_ids: default
-  key: xyz                       # if your private key is xyz.pem
+  key: xyz                       # key name
   elbs: 
     - elb-1
     - elb-2
   volumes:
     - vol-11111111
-  cnames:                        # specify cnames to bind to this instance
+  cnames:                        # cnames to assign to this instance's private IP
     - zone: somezone.com.
       names:
       - mongodb.somezone.com.
@@ -94,6 +92,8 @@ Usage: awsome [options]
 ```
 
 You can run ```awsome --help``` to see usage and options from the command line.
+
+In the grand scheme of things, awsome should probably be run by Jenkins or some other CI server. This can be easily accomplished by checking your requirements file into version control and running awsome on a post-commit hook. 
 
 Planning Algorithm
 ==================
