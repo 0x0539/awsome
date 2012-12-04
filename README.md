@@ -118,4 +118,4 @@ The second component of the algorithm involves finding the optimal mapping of ru
 2. {i1 => r2, i2 => r1}
 ```
 
-All mappings are considered. I consider volume attachments/detachments to be more destructive than package removals/installations. awsome first chooses the mapping that minimizes volume attachments/detachments. And, in the event of a tie, awsome chooses the one that minimizes the number of package removals/installations.
+All mappings are considered. I consider volume attachments/detachments to be more destructive than package removals/installations. awsome first chooses the mapping that minimizes volume attachments/detachments. In the event of a tie, awsome chooses the one that minimizes the number of package removals/installations.
