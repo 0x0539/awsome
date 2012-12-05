@@ -1,7 +1,7 @@
 awsome
 ======
 
-An EC2 environment manager tool designed to automate scaling, reconfigurations, and software deployments in your EC2 environment. Just change your YAML requirements file and let awsome do all the planning and heavy lifting.
+An Amazon Web Services (AWS) environment manager tool designed to automate EC2 instance reconfigurations, scaling, and software deployments. Just change your YAML requirements file and let awsome do all the planning and heavy lifting.
 
 One drawback is that in order to leverage software deployment features, all software must be packaged in Debian archives and all instances must run dpkg-enabled operating systems such as Ubuntu. For help with packaging your software in Debian archives, see ```https://github.com/0x0539/debstep.git```. I use reprepro to manage Debian repositories in an automated fashion and would recommend it to a friend.
 
