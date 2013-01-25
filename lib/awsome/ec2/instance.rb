@@ -76,6 +76,10 @@ module Awsome
         Awsome::Ec2.terminate_instances(@properties['instance_id'])
       end
 
+      def create_tags(tags)
+        Awsome::Ec2.create_tags(@properties['instance_id'], tags)
+      end
+
       private 
         def reload!
           instance = Awsome::Ec2.describe_instances('instance-id' => @properties['instance_id']).first

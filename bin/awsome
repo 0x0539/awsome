@@ -20,8 +20,9 @@ OptionParser.new do |opts|
   end
 end.parse!
 
-instances = Awsome::Ec2.describe_instances('instance-state-name' => 'running')
 requirements = Awsome::Requirements.from_yaml_file(requirements_file)
+filters = {'instance-state-name' => 'running'}.merge(requirements.filters)
+instances = Awsome::Ec2.describe_instances(filters)
 matchmaker = Awsome::Matchmaker.new(instances, requirements)
 executor = Awsome::Executor.new(matchmaker.matches)
 

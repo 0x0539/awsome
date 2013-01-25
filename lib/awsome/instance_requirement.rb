@@ -20,6 +20,10 @@ module Awsome
       @properties['cnames'] || []
     end
 
+    def tags
+      @properties['tags'] || {}
+    end
+
     def volumes_to_attach(instance)
       (volumes - volumes_attached_to(instance)).collect { |v| @options.find_volume(v) }
     end

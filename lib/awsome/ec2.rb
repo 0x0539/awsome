@@ -47,6 +47,12 @@ module Awsome
       Awsome::Ec2::Instance.new(Awsome.execute(cmd, columns: @@run_instance_fields, filter: /^INSTANCE/).first)
     end
 
+    def self.create_tags(resource_id, tags)
+      tags = tags.collect { |k, v| v ? "--tag #{k}=#{v}" : "--tag #{k}" }
+      cmd = command('ec2-create-tags', resource_id, *tags)
+      Awsome.execute(cmd)
+    end
+
     @@describe_instance_fields = %w( 
       reservation_identifier
       reservation_id

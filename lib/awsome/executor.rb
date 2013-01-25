@@ -16,6 +16,7 @@ module Awsome
 
         run
         wait_for_ssh
+        tag_instances
         reattach_volumes
         deploy
         terminate
@@ -43,6 +44,12 @@ module Awsome
         instances_to_use do |instance, requirement|
           instance.wait_until_running!
           instance.wait_for_ssh!
+        end
+      end
+
+      def tag_instances
+        instances_to_use do |instance, requirement|
+          instance.create_tags(requirement.tags)
         end
       end
 
