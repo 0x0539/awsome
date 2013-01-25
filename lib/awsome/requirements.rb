@@ -32,7 +32,8 @@ module Awsome
     private 
 
       def find_trait(name)
-        traits[name] || raise "no trait called #{name}"
+        raise "no trait called #{name}" unless traits.include?(name)
+        traits[name]
       end
 
       # implements trait inheritance
