@@ -38,7 +38,7 @@ module Awsome
 
       # implements trait inheritance
       def inflate!(instance, names)
-        inflated = req.clone
+        inflated = instance.clone
 
         # prevents loops
         merged = Set[]
