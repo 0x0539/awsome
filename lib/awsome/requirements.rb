@@ -16,7 +16,7 @@ module Awsome
     def instances
       @requirements['instances'].collect do |req| 
         instance = req.clone
-        inflate!(instance, instance.delete('traits'))
+        instance = inflate(instance, instance.delete('traits'))
         Awsome::InstanceRequirement.new(instance, @options) 
       end
     end
@@ -37,7 +37,7 @@ module Awsome
       end
 
       # implements trait inheritance
-      def inflate!(instance, names)
+      def inflate(instance, names)
         inflated = instance.clone
 
         # prevents loops
