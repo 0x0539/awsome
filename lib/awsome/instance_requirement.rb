@@ -50,11 +50,11 @@ module Awsome
 
     private 
       def packages
-        @properties['packages'].to_set
+        (@properties['packages'] || []).to_set
       end
 
       def volumes
-        @options.filter_volume_ids(@properties['volumes'])
+        @options.filter_volume_ids(@properties['volumes'] || [])
       end
 
       def packages_installed_on(instance)
