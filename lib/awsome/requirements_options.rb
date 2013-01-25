@@ -4,7 +4,7 @@ module Awsome
       @options = (requirements['options'] || {}).clone
     end
     def only_volume_ids
-      @options['volumes'].collect { |v| v['id'] }.to_set
+      (@options['volumes'] || []).collect { |v| v['id'] }.to_set
     end
     def except_instance_ids
       (@options['except_instance_ids'] || []).to_set
