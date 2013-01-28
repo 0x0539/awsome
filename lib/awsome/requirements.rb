@@ -50,11 +50,21 @@ module Awsome
             # extract trait supertraits for merging
             names += trait.delete('traits') || []
 
-            inflated = trait.merge(inflated)
+            inflated = recursive_merge(trait, inflated)
           end
         end
 
         inflated
+      end
+
+      def recursive_merge(base, overrides)
+        base.merge(overiddes) do |key, lval, rval|
+          case
+          when lval.is_a?(Hash ) && rval.is_a?(Hash ) then recursive_merge(lval, rval)
+          when lval.is_a?(Array) && rval.is_a?(Array) then lval + rval
+          else rval || lval
+          end
+        end
       end
   end
 end
