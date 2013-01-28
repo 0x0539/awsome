@@ -19,14 +19,14 @@ module Awsome
       end
 
       def wait_until_running!
-        Awsome.wait_until(interval: 10) do
+        Awsome.wait_until(interval: 20) do
           reload! 
           @properties['state'] =~ /^running/
         end
       end
 
       def wait_for_ssh!
-        Awsome.wait_until(interval: 10) { has_ssh? }
+        Awsome.wait_until(interval: 20) { has_ssh? }
       end
 
       def ssh(*args)
