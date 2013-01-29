@@ -58,7 +58,7 @@ module Awsome
       end
 
       def recursive_merge(base, overrides)
-        base.merge(overiddes) do |key, lval, rval|
+        base.merge(overrides) do |key, lval, rval|
           case
           when lval.is_a?(Hash ) && rval.is_a?(Hash ) then recursive_merge(lval, rval)
           when lval.is_a?(Array) && rval.is_a?(Array) then lval + rval
