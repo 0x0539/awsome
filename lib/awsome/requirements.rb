@@ -54,6 +54,8 @@ module Awsome
           end
         end
 
+        p inflated
+
         inflated
       end
 
