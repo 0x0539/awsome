@@ -61,6 +61,7 @@ module Awsome
       end
 
       def register_with_elbs(*load_balancer_names)
+        return if load_balancer_names.empty?
         Awsome::Elb.describe_lbs(*load_balancer_names).each { |elb| elb.register(@properties['instance_id']) }
       end
 

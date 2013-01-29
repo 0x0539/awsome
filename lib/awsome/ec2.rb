@@ -92,6 +92,7 @@ module Awsome
     )
 
     def self.describe_volumes(*volume_ids)
+      return [] if volume_ids.empty?
       cmd = [Awsome::Ec2.command('ec2-describe-volumes')] + volume_ids
       Awsome.execute(cmd, columns: @@describe_volumes_fields, filter: /^VOLUME/)
     end
@@ -147,6 +148,7 @@ module Awsome
     end
 
     def self.terminate_instances(*instance_ids)
+      return if instance_ids.empty?
       cmd = Awsome::Ec2.command("ec2-terminate-instances #{instance_ids.join(' ')}") 
       Awsome.execute(cmd)
     end
