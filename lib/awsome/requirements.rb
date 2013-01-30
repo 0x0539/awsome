@@ -1,4 +1,5 @@
 require 'yaml'
+require 'terminal-table'
 
 module Awsome
   class Requirements
@@ -14,7 +15,7 @@ module Awsome
     end
 
     def instances
-      @requirements['instances'].collect do |req| 
+      @instances ||= @requirements['instances'].collect do |req| 
         instance = req.clone
         instance = inflate(instance, instance.delete('traits'))
         Awsome::InstanceRequirement.new(instance, @options) 
@@ -27,6 +28,34 @@ module Awsome
 
     def traits
       @requirements['traits'] || {}
+    end
+
+    def self.to_table(requirements, title='Requirements')
+      rows = []
+
+      #add requirement rows
+      requirements.each do |req|
+        rows << [
+          req.tags.collect { |v| "#{v[0]}: #{v[1]}" }.join("\n"),
+          req.packages.to_a.join("\n"),
+          req.volumes.to_a.join("\n"),
+          req.elbs.join("\n"),
+          req.elastic_ips.join("\n"),
+          req.cnames.collect{|c|c['names']}.flatten.join("\n"),
+          req.ami_id,
+          req.key,
+          req.instance_type,
+          req.availability_zone,
+          req.security_group_ids
+        ]
+        rows << :separator
+      end
+
+      # remove last unnecessary separator
+      rows.pop if rows.any?
+
+      headings = %w(tags packages volumes elbs elasticips cnames ami key type zone secgroup)
+      Terminal::Table.new :headings => headings, :rows => rows, :title => title
     end
 
     private 

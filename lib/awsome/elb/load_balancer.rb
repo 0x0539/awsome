@@ -19,6 +19,10 @@ module Awsome
         Awsome::Elb.register_instance_with_lb(@properties['name'], instance_id)
       end
 
+      def name
+        @properties['name']
+      end
+
       private
         def reload!
           elb = Awsome::Elb.describe_lbs(@properties['name']).first

@@ -1,3 +1,5 @@
+require 'terminal-table'
+
 module Awsome
   module Ec2
     class Instance
@@ -81,7 +83,61 @@ module Awsome
         Awsome::Ec2.create_tags(@properties['instance_id'], tags)
       end
 
+      def self.to_table(instances, title='Instances')
+        rows = []
+
+        # add instance rows
+        instances.each do |instance|
+          rows << [
+            instance.packages.to_a.join("\n"),
+            instance.volumes.to_a.join("\n"),
+            instance.elbs.collect(&:name).join("\n"),
+            instance.ami_id,
+            instance.key,
+            instance.instance_type,
+            instance.availability_zone,
+            instance.security_group_ids
+          ]
+          rows << :separator
+        end
+
+        # remove last unnecessary separator
+        rows.pop if rows.any?
+
+        headings = %w(packages volumes elbs ami key type zone secgroup)
+        Terminal::Table.new :headings => headings, :rows => rows, :title => title
+      end
+
+      def elbs
+        Awsome::Elb.describe_lbs.select { |elb| elb.instances.include?(@properties['instance_id']) }
+      end
+
+      def id
+        @properties['instance_id']
+      end
+
+      def ami_id
+        @properties['ami_id']
+      end
+
+      def key
+        @properties['key']
+      end
+
+      def instance_type
+        @properties['instance_type']
+      end
+
+      def availability_zone
+        @properties['availability_zone']
+      end
+
+      def security_group_ids
+        @properties['security_group_ids']
+      end
+
       private 
+
         def reload!
           instance = Awsome::Ec2.describe_instances('instance-id' => @properties['instance_id']).first
           raise "instance #{@properties['instance_id']} not found" if instance.nil?
@@ -90,10 +146,6 @@ module Awsome
 
         def has_ssh?
           Awsome::Ssh.has_ssh?(@properties['public_dns_name'])
-        end
-
-        def elbs
-          Awsome::Elb.describe_lbs.select { |elb| elb.instances.include?(@properties['instance_id']) }
         end
 
     end

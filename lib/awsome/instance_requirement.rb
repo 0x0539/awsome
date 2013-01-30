@@ -24,6 +24,26 @@ module Awsome
       @properties['tags'] || {}
     end
 
+    def ami_id
+      @properties['ami_id']
+    end
+
+    def key
+      @properties['key']
+    end
+
+    def instance_type
+      @properties['instance_type']
+    end
+
+    def availability_zone
+      @properties['availability_zone']
+    end
+
+    def security_group_ids
+      @properties['security_group_ids']
+    end
+
     def volumes_to_attach(instance)
       (volumes - volumes_attached_to(instance)).collect { |v| @options.find_volume(v) }
     end
@@ -48,14 +68,15 @@ module Awsome
       packages_to_install(instance).size + packages_to_remove(instance).size
     end
 
-    private 
-      def packages
-        (@properties['packages'] || []).to_set
-      end
+    def packages
+      (@properties['packages'] || []).to_set
+    end
 
-      def volumes
-        @options.filter_volume_ids(@properties['volumes'] || [])
-      end
+    def volumes
+      @options.filter_volume_ids(@properties['volumes'] || [])
+    end
+
+    private 
 
       def packages_installed_on(instance)
         instance ? instance.packages : Set[]

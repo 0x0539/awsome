@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'awsome'
-  s.version = '0.0.33'
+  s.version = '0.0.46'
   s.date = '2012-01-11'
   s.email = 'sebastian@foodocs.com'
   s.homepage = 'http://github.com/0x0539/awsome'
@@ -11,4 +11,5 @@ Gem::Specification.new do |s|
   s.executables << 'awsome'
   s.add_dependency('awesome_print')
   s.add_dependency('route53')
+  s.add_dependency('terminal-table')
 end

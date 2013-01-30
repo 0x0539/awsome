@@ -2,6 +2,7 @@
 
 require 'awsome'
 require 'optparse'
+require 'terminal-table'
 
 requirements_file = 'requirements.yml'
 OptionParser.new do |opts|
@@ -20,10 +21,33 @@ OptionParser.new do |opts|
   end
 end.parse!
 
-requirements = Awsome::Requirements.from_yaml_file(requirements_file)
-filters = {'instance-state-name' => 'running'}.merge(requirements.filters)
-instances = Awsome::Ec2.describe_instances(filters)
-matchmaker = Awsome::Matchmaker.new(instances, requirements)
-executor = Awsome::Executor.new(matchmaker.matches)
+def perform_task(task, &block)
+  puts Terminal::Table.new { |t| t << ["[#{task}] Started"] }
+  retval = yield task
+  #puts Terminal::Table.new { |t| t << ["[#{task}] Complete"] }
+  #retval
+end
 
-executor.execute
+requirements = nil
+instances = nil
+matches = nil
+
+perform_task "Gathering Instance Requirements" do
+  requirements = Awsome::Requirements.from_yaml_file(requirements_file)
+  puts Awsome::Requirements.to_table(requirements.instances, 'Required Instances')
+end
+
+perform_task "Analyzing Running Instances" do
+  filters = {'instance-state-name' => 'running'}.merge(requirements.filters)
+  instances = Awsome::Ec2.describe_instances(filters)
+  puts Awsome::Ec2::Instance.to_table(instances, 'Running Instances')
+end
+
+perform_task "Matching Requirements to Instances" do
+  matches = Awsome::Matchmaker.new(instances, requirements).matches
+  puts Awsome::Matchmaker.to_table(matches, 'Requirement/Instance Match Plan')
+end
+
+perform_task "Executing Plan" do
+  Awsome::Executor.new(matches).execute
+end

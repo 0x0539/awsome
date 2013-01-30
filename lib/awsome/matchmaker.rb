@@ -1,3 +1,5 @@
+require 'terminal-table'
+
 module Awsome
   class Matchmaker
     def initialize(instances, requirements)
@@ -29,6 +31,36 @@ module Awsome
 
     def matches
       @signatures.reduce({}) { |memo, s| memo.merge(s => best_match(s)) }
+    end
+
+    def self.to_table(matches, title='Matches')
+      rows = []
+
+      # enumerate match rows
+      matches.each do |signature, match|
+        match[:i_pool].each_with_index do |i, idx|
+          r = match[:r_pool][idx]
+          rows << [
+            r.nil? ? 'terminate' : 'deploy',
+            i.nil? ? '(new)' : i.id,
+            (r || i).packages.to_a.join("\n"),
+            (r || i).volumes.to_a.join("\n"),
+            (r || i).elbs.collect{|e| e.is_a?(String) ? e : e.name}.join("\n"),
+            (r || i).ami_id,
+            (r || i).key,
+            (r || i).instance_type,
+            (r || i).availability_zone,
+            (r || i).security_group_ids,
+          ]
+          rows << :separator
+        end
+      end
+      
+      # remove last unnecessary separator
+      rows.pop if rows.any?
+
+      headings = %w(action instance packages volumes elbs ami key type zone secgroup)
+      Terminal::Table.new :headings => headings, :rows => rows, :title => title
     end
 
     private
