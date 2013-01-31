@@ -34,7 +34,7 @@ matches = nil
 
 perform_task "Step 1: Gathering Instance Requirements" do
   requirements = Awsome::Requirements.from_yaml_file(requirements_file)
-  puts Awsome::Requirements.to_table(requirements.instances, 'Finalized Instances Requirements')
+  puts Awsome::Requirements.to_table(requirements.instances, 'Instance Requirements')
 end
 
 perform_task "Step 2: Analyzing Running Instances" do
@@ -43,11 +43,11 @@ perform_task "Step 2: Analyzing Running Instances" do
   puts Awsome::Ec2::Instance.to_table(instances, 'Running Instances')
 end
 
-perform_task "Step 3: Deployment Planning" do
+perform_task "Step 3: Planning" do
   matches = Awsome::Matchmaker.new(instances, requirements).matches
-  puts Awsome::Matchmaker.to_table(matches, 'Deployment Plan')
+  puts Awsome::Matchmaker.to_table(matches, 'The Plan')
 end
 
-perform_task "Step 4: Plan Execution" do
+perform_task "Step 4: Execution" do
   Awsome::Executor.new(matches, requirements).execute
 end
