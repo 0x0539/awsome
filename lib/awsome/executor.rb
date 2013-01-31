@@ -1,7 +1,8 @@
 module Awsome
   class Executor
-    def initialize(matches)
+    def initialize(matches, requirements)
       @matches = matches
+      @requirements = requirements
     end
 
     def execute
@@ -73,6 +74,7 @@ module Awsome
       def terminate
         instances_to_terminate do |instance|
           instance.deregister_from_elbs
+          instance.detach_volumes(*instance.volumes.collect{|id|@requirements.options.find_volume(id)})
           instance.terminate
         end
       end

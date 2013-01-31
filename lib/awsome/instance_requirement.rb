@@ -79,11 +79,11 @@ module Awsome
     private 
 
       def packages_installed_on(instance)
-        instance ? instance.packages : Set[]
+        instance ? instance.packages(cached_ok: true) : Set[]
       end
 
       def volumes_attached_to(instance)
-        instance ? @options.filter_volume_ids(instance.volumes) : Set[]
+        instance ? @options.filter_volume_ids(instance.volumes(cached_ok: true)) : Set[]
       end
   end
 end

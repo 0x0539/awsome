@@ -8,7 +8,8 @@ module Awsome
     if config.verbose
       puts
       puts command
-      puts '='*command.length
+      #puts '-' * command.length
+      puts
     end
     if options[:system]
       result = system(command)

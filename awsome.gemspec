@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'awsome'
-  s.version = '0.0.46'
+  s.version = '0.0.52'
   s.date = '2012-01-11'
   s.email = 'sebastian@foodocs.com'
   s.homepage = 'http://github.com/0x0539/awsome'

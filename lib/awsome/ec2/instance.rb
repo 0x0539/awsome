@@ -10,14 +10,16 @@ module Awsome
         @properties = property_hash.clone
       end
 
-      def packages
-        Awsome::Debian.describe_debian_packages(@properties['public_dns_name']).to_set
+      def packages(options={})
+        return @cached_packages if @cached_packages && options[:cached_ok]
+        @cached_packages = Awsome::Debian.describe_debian_packages(@properties['public_dns_name']).to_set
       end
 
-      def volumes
-        Awsome::Ec2.describe_attachments('attachment.instance-id' => @properties['instance_id']).collect do |p| 
-          p['volume_id'] 
-        end.to_set
+      def volumes(options={})
+        return @cached_volumes if @cached_volumes && options[:cached_ok]
+        @cached_volumes = Awsome::Ec2.describe_attachments(
+          'attachment.instance-id' => @properties['instance_id']
+        ).collect{ |p| p['volume_id'] }.to_set
       end
 
       def wait_until_running!
@@ -58,6 +60,12 @@ module Awsome
         end
       end
 
+      def detach_volumes(*volumes)
+        volumes.each do |info|
+          Awsome::Ec2.detach_volume(info['id'], info['dir'], info['preumount'])
+        end
+      end
+
       def deregister_from_elbs
         elbs.each { |elb| elb.deregister(@properties['instance_id']) }
       end
@@ -89,6 +97,8 @@ module Awsome
         # add instance rows
         instances.each do |instance|
           rows << [
+            instance.id,
+            instance.public_dns_name,
             instance.packages.to_a.join("\n"),
             instance.volumes.to_a.join("\n"),
             instance.elbs.collect(&:name).join("\n"),
@@ -104,7 +114,7 @@ module Awsome
         # remove last unnecessary separator
         rows.pop if rows.any?
 
-        headings = %w(packages volumes elbs ami key type zone secgroup)
+        headings = %w(id dns packages volumes elbs ami key type zone secgroup)
         Terminal::Table.new :headings => headings, :rows => rows, :title => title
       end
 
@@ -114,6 +124,10 @@ module Awsome
 
       def id
         @properties['instance_id']
+      end
+
+      def public_dns_name
+        @properties['public_dns_name']
       end
 
       def ami_id

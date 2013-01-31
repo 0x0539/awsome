@@ -72,13 +72,24 @@ module Awsome
         best = nil
 
         permute i_pool do |i_pool_perm|
-          best = score_match(i_pool_perm, r_pool, best)
+          best = winner(best, build_match(i_pool_perm, r_pool))
         end
 
         best
       end
 
-      def score_match(i_pool, r_pool, best)
+      def winner(m1, m2)
+        return m1 if m2.nil?
+        return m2 if m1.nil?
+        raise 'cannot declare winner between 2 nil contestants' if m1.nil? && m2.nil?
+        return m1 if m1[:v_delta] < m2[:v_delta]
+        return m2 if m2[:v_delta] < m1[:v_delta]
+        return m1 if m1[:p_delta] < m2[:p_delta]
+        return m2 if m2[:p_delta] < m1[:p_delta]
+        return m1
+      end
+
+      def build_match(i_pool, r_pool)
         v_delta = 0
         p_delta = 0
 
@@ -90,27 +101,12 @@ module Awsome
           end
         end
 
-        top_score({ 
+        return { 
           v_delta: v_delta,
           p_delta: p_delta,
           i_pool: i_pool,
           r_pool: r_pool
-        }, best)
-      end
-
-      def top_score(*scores)
-        scores.sort_by do |s1, s2| 
-          case
-          when s1.nil? && s2.nil? then 0
-          when s2.nil? then -1
-          when s1.nil? then 1
-          when s1[:v_delta] < s2[:v_delta] then -1
-          when s1[:v_delta] > s2[:v_delta] then 1
-          when s1[:p_delta] < s2[:p_delta] then -1
-          when s1[:p_delta] > s2[:p_delta] then 1
-          else 0
-          end
-        end.first
+        }
       end
 
       def permute(array, permutation=[], &block)

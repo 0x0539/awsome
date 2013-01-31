@@ -22,32 +22,32 @@ OptionParser.new do |opts|
 end.parse!
 
 def perform_task(task, &block)
-  puts Terminal::Table.new { |t| t << ["[#{task}] Started"] }
-  retval = yield task
-  #puts Terminal::Table.new { |t| t << ["[#{task}] Complete"] }
-  #retval
+  puts
+  puts task
+  puts '=' * task.length
+  yield task
 end
 
 requirements = nil
 instances = nil
 matches = nil
 
-perform_task "Gathering Instance Requirements" do
+perform_task "Step 1: Gathering Instance Requirements" do
   requirements = Awsome::Requirements.from_yaml_file(requirements_file)
-  puts Awsome::Requirements.to_table(requirements.instances, 'Required Instances')
+  puts Awsome::Requirements.to_table(requirements.instances, 'Finalized Instances Requirements')
 end
 
-perform_task "Analyzing Running Instances" do
+perform_task "Step 2: Analyzing Running Instances" do
   filters = {'instance-state-name' => 'running'}.merge(requirements.filters)
   instances = Awsome::Ec2.describe_instances(filters)
   puts Awsome::Ec2::Instance.to_table(instances, 'Running Instances')
 end
 
-perform_task "Matching Requirements to Instances" do
+perform_task "Step 3: Deployment Planning" do
   matches = Awsome::Matchmaker.new(instances, requirements).matches
-  puts Awsome::Matchmaker.to_table(matches, 'Requirement/Instance Match Plan')
+  puts Awsome::Matchmaker.to_table(matches, 'Deployment Plan')
 end
 
-perform_task "Executing Plan" do
-  Awsome::Executor.new(matches).execute
+perform_task "Step 4: Plan Execution" do
+  Awsome::Executor.new(matches, requirements).execute
 end
