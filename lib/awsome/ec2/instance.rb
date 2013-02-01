@@ -40,10 +40,10 @@ module Awsome
       def associate_cnames(*cnames)
         cnames.each do |cname| 
           zone = cname['zone']
-          cname['private'].each do |name| 
+          (cname['private'] || []).each do |name| 
             Awsome::R53.redefine_cname(zone, name, @properties['private_dns_name'])
           end
-          cname['public'].each do |name| 
+          (cname['public'] || []).each do |name| 
             Awsome::R53.redefine_cname(zone, name, @properties['public_dns_name'])
           end
         end
