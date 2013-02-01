@@ -65,6 +65,7 @@ module Awsome
           instance.deregister_from_elbs
           instance.remove_packages(*requirement.packages_to_remove(instance))
           instance.install_packages(*requirement.packages_to_install(instance))
+          instance.autoremove_packages
           instance.associate_cnames(*requirement.cnames)
           instance.associate_ips(*requirement.elastic_ips)
           instance.register_with_elbs(*requirement.elbs)

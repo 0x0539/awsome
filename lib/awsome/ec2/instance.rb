@@ -86,6 +86,10 @@ module Awsome
         Awsome::Debian.install_debian_packages(@properties['public_dns_name'], *packages)
       end
 
+      def autoremove_packages
+        Awsome::Debian.autoremove_debian_packages(@properties['public_dns_name'])
+      end
+
       def terminate
         Awsome::Ec2.terminate_instances(@properties['instance_id'])
       end

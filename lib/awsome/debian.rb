@@ -25,11 +25,17 @@ module Awsome
       installed = describe_debian_packages(hostname)
       remaining = installed.to_set + packages.to_set
 
+      return if remaining.empty?
+
       Awsome::Ssh.ssh hostname, "sudo apt-get update"
 
       remaining.each { |p| Awsome::Ssh.ssh hostname, "sudo apt-get install -y --force-yes #{p}" }
 
       Awsome::Ssh.ssh hostname, "echo #{remaining.to_a.join(',')} > ~/packages.csv"
+    end
+
+    def self.autoremove_debian_packages(hostname)
+      Awsome::Ssh.ssh hostname, "sudo apt-get autoremove -y --force-yes"
     end
   end
 end
