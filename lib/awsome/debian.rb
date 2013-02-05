@@ -16,7 +16,9 @@ module Awsome
 
       Awsome::Ssh.ssh hostname, "sudo apt-get update"
 
-      packages.each { |p| Awsome::Ssh.ssh hostname, "sudo apt-get remove -y --force-yes #{p}" }
+      packages.each do |p| 
+        Awsome::Ssh.ssh hostname, "sudo apt-get remove -y --force-yes #{p}"
+      end
 
       Awsome::Ssh.ssh hostname, "echo #{remaining.to_a.join(',')} > ~/packages.csv"
     end
@@ -27,9 +29,10 @@ module Awsome
 
       return if remaining.empty?
 
-      Awsome::Ssh.ssh hostname, "sudo apt-get update"
-
-      remaining.each { |p| Awsome::Ssh.ssh hostname, "sudo apt-get install -y --force-yes #{p}" }
+      remaining.each do |p| 
+        Awsome::Ssh.ssh hostname, "sudo apt-get update"
+        Awsome::Ssh.ssh hostname, "sudo apt-get install -y --force-yes #{p}" 
+      end
 
       Awsome::Ssh.ssh hostname, "echo #{remaining.to_a.join(',')} > ~/packages.csv"
     end
