@@ -58,7 +58,7 @@ module Awsome
       cmd = command('ec2-create-tags', resource_id, *tags)
       Awsome.execute(
         cmd, 
-        task: "tagging #{resource_id}"
+        task: "creating tags"
       )
     end
 
@@ -135,7 +135,12 @@ module Awsome
     def self.describe_attachments(filters={})
       cmd = [Awsome::Ec2.command('ec2-describe-volumes')]
       cmd += filters.collect { |k,v| "--filter \"#{k}=#{v}\"" }
-      Awsome.execute(cmd, columns: @@describe_attachments_fields, filter: /^ATTACHMENT/)
+      Awsome.execute(
+        cmd, 
+        columns: @@describe_attachments_fields, 
+        filter: /^ATTACHMENT/,
+        verbose: false
+      )
     end
 
     def self.detach_volume(volume_id, dir, preumount)

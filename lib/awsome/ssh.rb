@@ -17,7 +17,7 @@ module Awsome
       else
         from = "#{ENV['SSH_USER']}@#{from}"
       end
-      Awsome.execute("scp -i #{ENV['SSH_KEY']} #{from} #{to}", system: true, output: false)
+      Awsome.execute("scp -i #{ENV['SSH_KEY']} #{from} #{to}", system: true, verbose: false)
     end
 
     def self.has_ssh?(host)

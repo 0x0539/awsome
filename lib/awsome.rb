@@ -1,3 +1,5 @@
+require 'terminal-table'
+
 module Awsome
   def self.config
     @@config ||= Config.new
@@ -5,7 +7,7 @@ module Awsome
 
   def self.execute(command, options={})
     command = command.join(' ') if command.is_a?(Array)
-    description = options[:task] ? "[#{options[:task]}] #{command}" : command
+    description = options[:task] ? "[#{options[:task].upcase}] #{command}" : command
     verbose = config.verbose && options[:verbose] != false
     if verbose
       puts
@@ -21,9 +23,16 @@ module Awsome
   ensure
     if verbose && options[:output] != false
       puts '-' * description.length
-      case result
-      when String then puts result
-      else ap result # print a table perhaps..
+      if result.is_a?(Array)
+        if result.any?
+          headings = result.first.collect(&:first)
+          rows = result.collect{|r| headings.collect{|h| r[h]}}
+          puts Terminal::Table.new headings: headings, rows: rows
+        else
+          puts Terminal::Table.new title: 'No Results'
+        end
+      else
+        puts result
       end
     end
     if config.stacks
