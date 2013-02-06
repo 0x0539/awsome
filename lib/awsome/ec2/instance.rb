@@ -23,14 +23,14 @@ module Awsome
       end
 
       def wait_until_running!
-        Awsome.wait_until(interval: 20) do
+        Awsome.wait_until(interval: 20, task: "waiting for instance #{id} 'running' status") do
           reload! 
           @properties['state'] =~ /^running/
         end
       end
 
       def wait_for_ssh!
-        Awsome.wait_until(interval: 20) { has_ssh? }
+        Awsome.wait_until(interval: 20, task: "waiting for instance #{id} ssh access") { has_ssh? }
       end
 
       def ssh(*args)
@@ -58,7 +58,9 @@ module Awsome
       def reattach_volumes(*volumes)
         volumes.each do |info| 
           Awsome::Ec2.detach_volume(info['id'], info['dir'], info['preumount'])
-          Awsome.wait_until(interval: 10) { Awsome::Ec2.volume_available?(info['id']) }
+          Awsome.wait_until(interval: 10, task: "waiting for volume #{info['id']} to become available") do 
+            Awsome::Ec2.volume_available?(info['id'])
+          end
           Awsome::Ec2.attach_volume(info['id'], @properties['instance_id'], info['device']) 
         end
       end

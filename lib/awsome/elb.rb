@@ -47,18 +47,31 @@ module Awsome
 
     def self.describe_lbs(*load_balancer_names)
       cmd = Awsome::Elb.command("elb-describe-lbs #{load_balancer_names.join(' ')}")
-      properties = Awsome.execute(cmd, columns: @@describe_lbs_columns, delimiter: @@delimiter)
+      properties = Awsome.execute(
+        cmd, 
+        columns: @@describe_lbs_columns, 
+        delimiter: @@delimiter,
+        verbose: false
+      )
       properties.collect { |p| Awsome::Elb::LoadBalancer.new(p) }
     end
 
     def self.deregister_instance_from_lb(load_balancer_name, instance_id)
       cmd = Awsome::Elb.command('elb-deregister-instances-from-lb', load_balancer_name, instances: instance_id)
-      Awsome.execute(cmd, delimiter: @@delimiter)
+      Awsome.execute(
+        cmd, 
+        delimiter: @@delimiter,
+        task: 'deregistering from elb'
+      )
     end
 
     def self.register_instance_with_lb(load_balancer_name, instance_id)
       cmd = Awsome::Elb.command('elb-register-instances-with-lb', load_balancer_name, instances: instance_id)
-      Awsome.execute(cmd, delimiter: @@delimiter)
+      Awsome.execute(
+        cmd, 
+        delimiter: @@delimiter,
+        task: 'registering with elb'
+      )
     end
   end
 end

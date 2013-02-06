@@ -5,10 +5,11 @@ module Awsome
 
   def self.execute(command, options={})
     command = command.join(' ') if command.is_a?(Array)
-    if config.verbose
+    description = options[:task] ? "[#{options[:task]}] #{command}" : command
+    verbose = config.verbose && options[:verbose] != false
+    if verbose
       puts
-      puts command
-      puts '-' * [command.length, 100].min
+      puts description
     end
     if options[:system]
       result = system(command)
@@ -18,10 +19,11 @@ module Awsome
       result = map_table(result, options)
     end
   ensure
-    if config.verbose
+    if verbose && options[:output] != false
+      puts '-' * description.length
       case result
       when String then puts result
-      else ap result
+      else ap result # print a table perhaps..
       end
     end
     if config.stacks
@@ -48,7 +50,10 @@ module Awsome
     retries = opts[:retries] || 5
     interval = opts[:interval] || 5
     while !yield && retries > 0
-      puts "block returned false (#{retries} more retries)..." if Awsome.config.verbose
+      if config.verbose
+        task = opts[:task] || 'block returned false'
+        puts "[#{retries} more retries] #{task}"
+      end
       sleep interval
       retries -= 1
     end

@@ -17,11 +17,11 @@ module Awsome
       else
         from = "#{ENV['SSH_USER']}@#{from}"
       end
-      Awsome.execute("scp -i #{ENV['SSH_KEY']} #{from} #{to}", system: true)
+      Awsome.execute("scp -i #{ENV['SSH_KEY']} #{from} #{to}", system: true, output: false)
     end
 
     def self.has_ssh?(host)
-      Awsome.execute("nc -zw 2 #{host} 22 < /dev/null", system: true)
+      Awsome.execute("nc -zw 2 #{host} 22 < /dev/null", system: true, verbose: false)
     end
   end
 end

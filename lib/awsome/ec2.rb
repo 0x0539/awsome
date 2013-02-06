@@ -44,13 +44,22 @@ module Awsome
         'instance-type'.to_sym => properties['instance_type'], 
         'availability-zone'.to_sym => properties['availability_zone']
       )
-      Awsome::Ec2::Instance.new(Awsome.execute(cmd, columns: @@run_instance_fields, filter: /^INSTANCE/).first)
+      result = Awsome.execute(
+        cmd, 
+        columns: @@run_instance_fields, 
+        filter: /^INSTANCE/, 
+        task: 'creating instance'
+      )
+      Awsome::Ec2::Instance.new(result.first)
     end
 
     def self.create_tags(resource_id, tags)
       tags = tags.collect { |k, v| v ? "--tag #{k}=#{v}" : "--tag #{k}" }
       cmd = command('ec2-create-tags', resource_id, *tags)
-      Awsome.execute(cmd)
+      Awsome.execute(
+        cmd, 
+        task: "tagging #{resource_id}"
+      )
     end
 
     @@describe_instance_fields = %w( 
@@ -76,7 +85,13 @@ module Awsome
       cmd = [Awsome::Ec2.command('ec2-describe-instances')]
       cmd += filters.collect { |k,v| "--filter \"#{k}=#{v}\"" }
       preprocess = Proc.new { |text| text.gsub("\nINSTANCE", " INSTANCE") }
-      properties = Awsome.execute(cmd, columns: @@describe_instance_fields, filter: /^RESERVATION/, preprocess: preprocess)
+      properties = Awsome.execute(
+        cmd, 
+        columns: @@describe_instance_fields, 
+        filter: /^RESERVATION/, 
+        preprocess: preprocess,
+        verbose: false
+      )
       properties.collect { |p| Awsome::Ec2::Instance.new(p) }
     end
 
@@ -94,7 +109,12 @@ module Awsome
     def self.describe_volumes(*volume_ids)
       return [] if volume_ids.empty?
       cmd = [Awsome::Ec2.command('ec2-describe-volumes')] + volume_ids
-      Awsome.execute(cmd, columns: @@describe_volumes_fields, filter: /^VOLUME/)
+      Awsome.execute(
+        cmd, 
+        columns: @@describe_volumes_fields, 
+        filter: /^VOLUME/,
+        verbose: false
+      )
     end
 
     def self.volume_available?(volume_id)
@@ -127,7 +147,10 @@ module Awsome
         instance.ssh "sudo umount #{dir}"
 
         cmd = Awsome::Ec2.command('ec2-detach-volume', volume_id)
-        Awsome.execute(cmd)
+        Awsome.execute(
+          cmd, 
+          task: 'detaching volume'
+        )
       end
     end
 
@@ -139,18 +162,29 @@ module Awsome
 
     def self.associate_address(instance_id, ip_address)
       cmd = Awsome::Ec2.command('ec2-associate-address', ip_address, instance: instance_id)
-      Awsome.execute(cmd, columns: @@associate_address_columns, filter: /^ADDRESS/)
+      Awsome.execute(
+        cmd, 
+        columns: @@associate_address_columns, 
+        filter: /^ADDRESS/, 
+        task: 'associating ip'
+      )
     end
 
     def self.attach_volume(volume_id, instance_id, device)
       cmd = Awsome::Ec2.command('ec2-attach-volume', volume_id, instance: instance_id, device: device)
-      Awsome.execute(cmd)
+      Awsome.execute(
+        cmd, 
+        task: 'attaching volume'
+      )
     end
 
     def self.terminate_instances(*instance_ids)
       return if instance_ids.empty?
       cmd = Awsome::Ec2.command("ec2-terminate-instances #{instance_ids.join(' ')}") 
-      Awsome.execute(cmd)
+      Awsome.execute(
+        cmd, 
+        task: 'terminating instances'
+      )
     end
   end
 end
