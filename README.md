@@ -19,7 +19,7 @@ Next, download the EC2 api tools and the ELB api tools.
 Getting Started
 ===============
 
-awsome takes a YAML file that describes your EC2 requirements as input. The following example is similar to what is used on foodocs.com:
+awsome takes a YAML file that describes your EC2 requirements as input:
 
 ```
 options:
@@ -31,15 +31,23 @@ options:
     device: /dev/sdf             # desired device name
     dir: /var/lib/mongodb        # mount point
     preumount: sudo stop mongodb # command to execute before unmounting/detaching
+filters:
+  - "tag:environment": prod      # only get instances tagged with 'production'
+traits:
+  base_trait:
+    availability_zone: us-southwest-4a
+    ami_id: ami-11111111
+    key: xyz
+    security_group_ids: default
+    tags:
+      environment: prod
 instances:
 - packages:                      # debian packages to deploy (latest version)
     - debian-package-1           
     - debian-package-2
-  availability_zone: us-southwest-4a
-  ami_id: ami-11111111
+  traits:                        # inherit properties from these traits
+    - base_trait
   instance_type: m1.small
-  security_group_ids: default
-  key: xyz                       # key name
   elbs: 
     - elb-1
     - elb-2
@@ -47,12 +55,14 @@ instances:
     - vol-11111111
   cnames:                        # cnames to assign to this instance's private IP
     - zone: somezone.com.
-      names:
+      private:                   # these will use the internal ip-A-B-C-D DNS
       - mongodb.somezone.com.
       - internal.somezone.com.
+      public:                    # these will use the external ec2-A-B-C-D DNS
+      - external.somezone.com.
 ```
 
-You also need to declare some environment variables before you run the tool. I accomplished this with a shell script that exports those variables:
+You need to declare some environment variables before you run the tool. A shell script that exports those variables will suffice:
 
 ```
 export AWS_ACCESS_KEY="..."
